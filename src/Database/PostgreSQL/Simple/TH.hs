@@ -10,6 +10,7 @@ module Database.PostgreSQL.Simple.TH
   )
 where
 
+import Control.Exception
 import qualified Data.Char as Char
 import qualified Data.Text as Text
 import Database.PostgreSQL.Simple
@@ -20,6 +21,7 @@ import qualified PostgresqlSyntax.Parsing as P
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
+import qualified Text.Show
 import Prelude hiding (some)
 
 queryQ :: QuasiQuoter
@@ -48,27 +50,37 @@ psqlExp :: String -> Q Exp
 psqlExp sql = [|((fromString :: [Char] -> Query) sql', $(qValues))|]
   where
     parts = case parse psqlStatement "" (Text.pack sql) of
-      Left err -> error (show err)
+      Left err -> throw . ParseException . errorBundlePretty $ err
       Right ps -> ps
 
-    (sql' :: [Char], placeholders) =
-      bimap
-        (toString . checkSyntax . Text.concat)
-        (map toString)
-        $ foldr step ([], []) parts
+    (sql', placeholders) =
+      buildAndCheck $ foldr step ([], [], []) parts
       where
-        step (SyntaxFragment f) (fs, ps) = (f : fs, ps)
-        step (Placeholder p) (fs, ps) = ("?" : fs, p : ps)
+        step (SyntaxFragment f) (fs, gs, ps) = (f : fs, f : gs, ps)
+        step (Placeholder p) (fs, gs, ps) = ("?" : fs, "$0" : gs, p : ps)
+
+        buildAndCheck (fs, gs, ps) =
+          let psqlSimpleSql = Text.concat fs
+              legalSql = Text.concat gs
+           in (toString $ checkSyntax psqlSimpleSql legalSql, map toString ps)
 
     qValues = case placeholders of
       [x] -> [|Only $(varE . mkName $ x)|]
       xs -> tupE . map (varE . mkName) $ xs
 
-    checkSyntax s = case P.run (space' >> P.preparableStmt <* space') s of
-      Left err -> error $ "SQL Syntax Error: " <> toText err
-      Right _ -> s
+    checkSyntax sqlToReturn sqlToCheck =
+      case P.run (space' >> P.preparableStmt <* space') sqlToCheck of
+        Left err -> throw . ParseException $ err
+        Right _ -> sqlToReturn
 
     space' = HM.parse space
+
+newtype ParseException = ParseException [Char]
+
+instance Text.Show.Show ParseException where
+  show (ParseException e) = e
+
+instance Exception ParseException
 
 type Parser = Parsec Void Text
 
@@ -78,7 +90,16 @@ data SqlPart
   deriving (Show, Eq)
 
 psqlStatement :: Parsec Void Text [SqlPart]
-psqlStatement = some (choice [placeholder, singleQuoted, comment, fragment])
+psqlStatement =
+  some $
+    choice
+      [ placeholder,
+        singleQuoted,
+        discard comment,
+        fragment
+      ]
+  where
+    discard p = p $> SyntaxFragment ""
 
 placeholder :: Parsec Void Text SqlPart
 placeholder = do

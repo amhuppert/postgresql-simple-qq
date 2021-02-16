@@ -91,7 +91,7 @@ unit_blockComment = testCase "? in block comment" $ do
   result
     @?= Just
       [ SyntaxFragment "SELECT * FROM ",
-        SyntaxFragment "/* ?name */",
+        SyntaxFragment "",
         SyntaxFragment " users"
       ]
   where
@@ -103,7 +103,7 @@ unit_lineComment = testCase "? in line comment" $ do
   result
     @?= Just
       [ SyntaxFragment f1,
-        SyntaxFragment "-- ?name",
+        SyntaxFragment "",
         SyntaxFragment "\nFROM users"
       ]
   where
