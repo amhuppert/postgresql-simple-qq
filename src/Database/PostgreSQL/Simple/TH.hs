@@ -7,6 +7,7 @@ module Database.PostgreSQL.Simple.TH
   ( psql,
     psqlStatement,
     SqlPart (..),
+    queryQ,
   )
 where
 
@@ -20,7 +21,6 @@ import Language.Haskell.TH.Quote
 import qualified PostgresqlSyntax.Parsing as P
 import Text.Megaparsec
 import Text.Megaparsec.Char
-import qualified Text.Megaparsec.Char.Lexer as L
 import qualified Text.Show
 import Prelude hiding (some)
 
@@ -89,7 +89,7 @@ data SqlPart
   | Placeholder Text
   deriving (Show, Eq)
 
-psqlStatement :: Parsec Void Text [SqlPart]
+psqlStatement :: Parser [SqlPart]
 psqlStatement =
   some $
     choice
@@ -101,14 +101,14 @@ psqlStatement =
   where
     discard p = p $> SyntaxFragment ""
 
-placeholder :: Parsec Void Text SqlPart
+placeholder :: Parser SqlPart
 placeholder = do
-  char '?'
+  void $ char '?'
   Placeholder <$> haskellIdentifierName
 
-singleQuoted :: Parsec Void Text SqlPart
+singleQuoted :: Parser SqlPart
 singleQuoted = do
-  char '\''
+  void $ char '\''
   inner <-
     Text.concat
       <$> manyTill quotedChar (char '\'')
@@ -116,33 +116,33 @@ singleQuoted = do
   where
     quotedChar = string "\\'" <|> (Text.singleton <$> anySingleBut '\'')
 
-haskellIdentifierName :: Parsec Void Text Text
+haskellIdentifierName :: Parser Text
 haskellIdentifierName = do
   takeWhile1P Nothing isIdentifierChar <?> "Haskell identifier name"
   where
     isIdentifierChar c = Char.isAlphaNum c || (c == '_') || c == '\''
 
-fragment :: Parsec Void Text SqlPart
+fragment :: Parser SqlPart
 fragment = SyntaxFragment <$> takeWhile1P Nothing (not . isFragmentBoundary)
 
 isFragmentBoundary :: Char -> Bool
 isFragmentBoundary c = c == '?' || c == '\'' || c == '/' || c == '-'
 
-comment :: Parsec Void Text SqlPart
+comment :: Parser SqlPart
 comment = blockComment <|> lineComment
 
-lineComment :: Parsec Void Text SqlPart
+lineComment :: Parser SqlPart
 lineComment = do
-  string "--"
+  void $ string "--"
   c <- takeWhileP Nothing (/= '\n')
   pure $ SyntaxFragment $ "--" <> c
 
-blockComment :: Parsec Void Text SqlPart
+blockComment :: Parser SqlPart
 blockComment = do
-  string "/*"
+  void $ string "/*"
   SyntaxFragment . Text.concat . ("/*" :) <$> chunks
   where
-    chunks :: Parsec Void Text [Text]
+    chunks :: Parser [Text]
     chunks = do
       curr <- takeWhileP Nothing (/= '*')
       rest <- ((: []) <$> string "*/") <|> ((:) <$> string "*" <*> chunks)

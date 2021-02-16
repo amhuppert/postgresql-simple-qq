@@ -30,6 +30,11 @@ dependencies:
 
 library:
   source-dirs: src
+  ghc-options:
+    - -Wall
+    - -Werror
+    - -Wredundant-constraints
+    - -Wpartial-fields
 
 executables:
   postgres-simple-qq-exe:

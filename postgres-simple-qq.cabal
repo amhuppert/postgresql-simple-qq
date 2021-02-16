@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b82cfeb889b1a95ee84ede754ada224754d671f7a260fa89db897dec81a586b
+-- hash: b17ba8a5c32a28846e73ef98f1f71e78017e3456b909d2bbb35c394fae7a9f5a
 
 name:           postgres-simple-qq
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       Paths_postgres_simple_qq
   hs-source-dirs:
       src
+  ghc-options: -Wall -Werror -Wredundant-constraints -Wpartial-fields
   build-depends:
       base-noprelude
     , headed-megaparsec
