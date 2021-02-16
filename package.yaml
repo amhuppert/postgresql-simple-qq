@@ -1,0 +1,69 @@
+name:                postgres-simple-qq
+version:             0.1.0.0
+github:              "amhuppert/postgres-simple-qq"
+license:             BSD3
+author:              "Alex Huppert"
+maintainer:          "huppertam@gmail.com"
+copyright:           "2021 Alex Huppert"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/amhuppert/postgres-simple-qq#readme>
+
+dependencies:
+- base-noprelude
+- relude
+- text
+- postgresql-simple
+- megaparsec
+- template-haskell
+- postgresql-syntax
+- headed-megaparsec
+
+library:
+  source-dirs: src
+
+executables:
+  postgres-simple-qq-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    - -Wredundant-constraints
+    - -Wpartial-fields
+    dependencies:
+    - base-noprelude
+    - postgres-simple-qq
+
+tests:
+  postgres-simple-qq-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    - -Wmissing-export-lists
+    - -Wredundant-constraints
+    - -Wpartial-fields
+    dependencies:
+    - postgres-simple-qq
+    - base-noprelude
+    - hedgehog
+    - tasty
+    - tasty-hedgehog
+    - tasty-hunit
