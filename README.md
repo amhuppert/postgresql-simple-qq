@@ -1,4 +1,4 @@
-# postgres-simple-qq
+# postgresql-simple-qq
 
 Haskell quasiquoters for [postgresql-simple](https://hackage.haskell.org/package/postgresql-simple).
 

@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b17ba8a5c32a28846e73ef98f1f71e78017e3456b909d2bbb35c394fae7a9f5a
+-- hash: 58a5cc07f058c6490b1589721a1c60577aacedb0e95ab92bcaa3ca58a0687480
 
-name:           postgres-simple-qq
+name:           postgresql-simple-qq
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/amhuppert/postgres-simple-qq#readme>
-homepage:       https://github.com/amhuppert/postgres-simple-qq#readme
-bug-reports:    https://github.com/amhuppert/postgres-simple-qq/issues
+description:    Please see the README on GitHub at <https://github.com/amhuppert/postgresql-simple-qq#readme>
+homepage:       https://github.com/amhuppert/postgresql-simple-qq#readme
+bug-reports:    https://github.com/amhuppert/postgresql-simple-qq/issues
 author:         Alex Huppert
 maintainer:     huppertam@gmail.com
 copyright:      2021 Alex Huppert
@@ -22,14 +22,14 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/amhuppert/postgres-simple-qq
+  location: https://github.com/amhuppert/postgresql-simple-qq
 
 library
   exposed-modules:
       Database.PostgreSQL.Simple.TH
       Prelude
   other-modules:
-      Paths_postgres_simple_qq
+      Paths_postgresql_simple_qq
   hs-source-dirs:
       src
   ghc-options: -Wall -Werror -Wredundant-constraints -Wpartial-fields
@@ -47,7 +47,7 @@ library
 executable postgres-simple-qq-exe
   main-is: Main.hs
   other-modules:
-      Paths_postgres_simple_qq
+      Paths_postgresql_simple_qq
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror -Wredundant-constraints -Wpartial-fields
@@ -55,8 +55,8 @@ executable postgres-simple-qq-exe
       base-noprelude
     , headed-megaparsec
     , megaparsec
-    , postgres-simple-qq
     , postgresql-simple
+    , postgresql-simple-qq
     , postgresql-syntax
     , relude
     , template-haskell
@@ -67,7 +67,7 @@ test-suite postgres-simple-qq-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_postgres_simple_qq
+      Paths_postgresql_simple_qq
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror -Wmissing-export-lists -Wredundant-constraints -Wpartial-fields
@@ -76,8 +76,8 @@ test-suite postgres-simple-qq-test
     , headed-megaparsec
     , hedgehog
     , megaparsec
-    , postgres-simple-qq
     , postgresql-simple
+    , postgresql-simple-qq
     , postgresql-syntax
     , relude
     , tasty

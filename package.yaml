@@ -1,6 +1,6 @@
-name:                postgres-simple-qq
+name:                postgresql-simple-qq
 version:             0.1.0.0
-github:              "amhuppert/postgres-simple-qq"
+github:              "amhuppert/postgresql-simple-qq"
 license:             BSD3
 author:              "Alex Huppert"
 maintainer:          "huppertam@gmail.com"
@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/amhuppert/postgres-simple-qq#readme>
+description:         Please see the README on GitHub at <https://github.com/amhuppert/postgresql-simple-qq#readme>
 
 dependencies:
 - base-noprelude
@@ -50,7 +50,7 @@ executables:
     - -Wpartial-fields
     dependencies:
     - base-noprelude
-    - postgres-simple-qq
+    - postgresql-simple-qq
 
 tests:
   postgres-simple-qq-test:
@@ -66,7 +66,7 @@ tests:
     - -Wredundant-constraints
     - -Wpartial-fields
     dependencies:
-    - postgres-simple-qq
+    - postgresql-simple-qq
     - base-noprelude
     - hedgehog
     - tasty
